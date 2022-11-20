@@ -96,7 +96,7 @@ void DisplayCB() {
 	{
 		glColor3f(1, 1, 1);
 		char* endgame_text[20];
-		if(player_hp > 0)
+		if (player_hp > 0)
 			sprintf((char*)endgame_text, "You Won !");
 		else
 			sprintf((char*)endgame_text, "You Lost :(");
@@ -200,17 +200,17 @@ void DrawBoss() {
 // draws the boss health bar
 void DrawBossHealthBar() {
 	glColor3f(1, 1, 1);
-	DrawRectangle(195, window_y_size - 35, 410, 30);
-	glColor3f(1, 0.5, 0);
-	DrawRectangle(200, window_y_size - 30, 400 * (boss_hp / boss_max_hp), 20);
+	DrawRectangle(195, window_y_size - 30, 410, 25);
+	glColor3f(1, 0.3, 0.3);
+	DrawRectangle(200, window_y_size - 25, 400 * (boss_hp / boss_max_hp), 15);
 }
 
 // draws the player health bar
 void DrawPlayerHealthBar() {
 	glColor3f(1, 1, 1);
-	DrawRectangle(195, 25, 410, 30);
-	glColor3f(1, 0.5, 0);
-	DrawRectangle(200, 30, 400 * (player_hp / player_max_hp), 20);
+	DrawRectangle(245, 5, 310, 25);
+	glColor3f(1, 0.3, 0.3);
+	DrawRectangle(250, 10, 300 * (player_hp / player_max_hp), 15);
 }
 
 // draws the power up while adding the movement of the power up
@@ -281,7 +281,7 @@ void GameLoopCB(int value) {
 	if (IsCollision(power_up_x, power_up_y, power_up_size, player_x, player_y, player_size)) {
 		player_invulnerability = true;
 		power_up_x = rand() % (window_x_size - power_up_size) + power_up_size;
-		power_up_y = rand() % (window_y_size - power_up_size) + power_up_size;
+		power_up_y = rand() % (window_y_size - power_up_size - 200) + power_up_size + 100;
 		glutTimerFunc(power_up_duration, PowerUpDecayCB, 0);
 	}
 
