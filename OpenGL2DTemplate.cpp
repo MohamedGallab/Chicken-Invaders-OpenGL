@@ -15,7 +15,7 @@ void DrawPlayer();
 void DrawPowerUp();
 void DrawBullets();
 void DrawBossHealthBar();
-void DrawPlayerHealthBar();
+void DrawPlayerHealthText();
 void Print(int x, int y, char* string);
 void DrawCircle(int x, int y, float r);
 void DrawRectangle(int x, int y, int w, int h);
@@ -91,6 +91,7 @@ void main(int argc, char** argr) {
 }
 
 void DisplayCB() {
+	glClearColor(0, 0.2, 0.3, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	if (game_over)
 	{
@@ -108,7 +109,7 @@ void DisplayCB() {
 	DrawPlayer();
 	DrawBullets();
 	DrawBossHealthBar();
-	DrawPlayerHealthBar();
+	DrawPlayerHealthText();
 	if (!player_invulnerability)
 		DrawPowerUp();
 	glFlush();
@@ -163,13 +164,84 @@ void DrawRectangle(int x, int y, int w, int h) {
 void DrawPlayer() {
 	glPushMatrix();
 	glTranslatef(player_x, player_y, 0);
+
 	glColor3f(1, 1, 1);
 	if (player_invulnerability)
 		glColor3f(1, 0, 1);
 	DrawCircle(0, 0, player_size);
-	glColor3f(1, 0, 0);
+
+	glBegin(GL_POLYGON);
+	glVertex2i(-player_size, 0);
+	glVertex2i(player_size, 0);
+	glVertex2i(player_size - 20, player_size + 10);
+	glVertex2i(-player_size + 20, player_size + 10);
+	glEnd();
+
+	glBegin(GL_QUADS);
+	glVertex2i(player_size / 6, 0);
+	glVertex2i(player_size/1.5, 0);
+	glVertex2i(player_size/1.5, -player_size-10);
+	glVertex2i(player_size / 6, -player_size-10);
+
+	glVertex2i(-player_size / 6, 0);
+	glVertex2i(-player_size / 1.5, 0);
+	glVertex2i(-player_size / 1.5, -player_size - 10);
+	glVertex2i(-player_size / 6, -player_size - 10);
+	glEnd();
+
+	glLineWidth(3);
+	glColor3f(0.3, 0.5, 1);
+	glBegin(GL_LINE_STRIP);
+	glVertex2i(player_size, 0);
+	glVertex2i(player_size/2, -10);
+	glVertex2i(-player_size/2, -10);
+	glVertex2i(-player_size, 0);
+	glEnd();
+
 	DrawCircle(10, 10, 5);
 	DrawCircle(-10, 10, 5);
+
+	glPopMatrix();
+}
+
+// draws the boss while adding the movement of the boss
+void DrawBoss() {
+	glPushMatrix();
+	glTranslatef(boss_x, boss_y, 0);
+
+	glColor3f(1, 1, 1);
+	DrawCircle(0, 0, boss_size);
+
+	glBegin(GL_QUADS);
+	glVertex2i(-boss_size, 0);
+	glVertex2i(boss_size, 0);
+	glVertex2i(boss_size - 30, -boss_size - 10);
+	glVertex2i(-boss_size + 30, -boss_size - 10);
+	glEnd();
+
+	glColor3f(0, 0, 0);
+	glLineWidth(3);
+	glBegin(GL_LINE_STRIP);
+	glVertex2i(-boss_size, -10);
+	glVertex2i(-boss_size + 20, 10);
+	glVertex2i(-boss_size + 40, -10);
+	glVertex2i(-boss_size + 60, 10);
+	glVertex2i(-boss_size + 80, -10);
+	glVertex2i(-boss_size + 100, 10);
+	glEnd();
+
+	glColor3f(1, 0, 0);
+	glBegin(GL_TRIANGLES);
+	// right eye
+	glVertex2i(boss_size / 2 - 10, boss_size / 2 + 5);
+	glVertex2i(boss_size / 2 - 10, boss_size / 2 - 5);
+	glVertex2i(boss_size / 2 + 10, boss_size / 2 + 5);
+	// left eye
+	glVertex2i(-boss_size / 2 + 10, boss_size / 2 + 5);
+	glVertex2i(-boss_size / 2 + 10, boss_size / 2 - 5);
+	glVertex2i(-boss_size / 2 - 10, boss_size / 2 + 5);
+	glEnd();
+
 	glPopMatrix();
 }
 
@@ -177,24 +249,15 @@ void DrawPlayer() {
 void DrawBullets() {
 	for (auto& bullet : player_bullets) // access by reference to avoid copying
 	{
-		glColor3f(0, 0, 1);
+		glColor3f(0.5, 0.7, 1);
 		DrawCircle(bullet.first, bullet.second, bullet_size);
 	}
 
 	for (auto& bullet : boss_bullets) // access by reference to avoid copying
 	{
-		glColor3f(1, 0, 0);
+		glColor3f(1, 0, 0.3);
 		DrawCircle(bullet.first, bullet.second, bullet_size);
 	}
-}
-
-// draws the boss while adding the movement of the boss
-void DrawBoss() {
-	glPushMatrix();
-	glTranslatef(boss_x, boss_y, 0);
-	glColor3f(1, 1, 1);
-	DrawCircle(0, 0, boss_size);
-	glPopMatrix();
 }
 
 // draws the boss health bar
@@ -206,11 +269,12 @@ void DrawBossHealthBar() {
 }
 
 // draws the player health bar
-void DrawPlayerHealthBar() {
+void DrawPlayerHealthText() {
 	glColor3f(1, 1, 1);
-	DrawRectangle(245, 5, 310, 25);
-	glColor3f(1, 0.3, 0.3);
-	DrawRectangle(250, 10, 300 * (player_hp / player_max_hp), 15);
+	char* player_health_text[20];
+	sprintf((char*)player_health_text, "lives: %i / %i", (int)player_hp, (int)player_max_hp);
+	Print(20, window_y_size - 30, (char*)player_health_text);
+	glFlush();
 }
 
 // draws the power up while adding the movement of the power up
