@@ -79,7 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="OpenGL2DTemplate.cpp" />
+    <ClCompile Include="P-11 49-13821.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
